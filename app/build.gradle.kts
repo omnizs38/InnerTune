@@ -1,7 +1,5 @@
 @file:Suppress("UnstableApiUsage")
 
-val isFullBuild: Boolean by rootProject.extra
-
 plugins {
     id("com.android.application")
     kotlin("android")
@@ -11,22 +9,16 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-if (isFullBuild && System.getenv("PULL_REQUEST") == null) {
-    apply(plugin = "com.google.gms.google-services")
-    apply(plugin = "com.google.firebase.crashlytics")
-    apply(plugin = "com.google.firebase.firebase-perf")
-}
-
 android {
     namespace = "com.zionhuang.music"
     compileSdk = 35
     buildToolsVersion = "35.0.0"
     defaultConfig {
         applicationId = "com.zionhuang.music"
-        minSdk = 24
+        minSdk = 34
         targetSdk = 35
-        versionCode = 26
-        versionName = "0.5.10"
+        versionCode = 27
+        versionName = "0.5.10-foss"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -40,25 +32,7 @@ android {
             applicationIdSuffix = ".debug"
         }
     }
-    flavorDimensions += "version"
-    productFlavors {
-        create("full") {
-            dimension = "version"
-        }
-        create("foss") {
-            dimension = "version"
-        }
-    }
 
-//    splits {
-//        abi {
-//            isEnable = true
-//            reset()
-//            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-//            isUniversalApk = false
-//        }
-//    }
-    
     signingConfigs {
         getByName("debug") {
             if (System.getenv("MUSIC_DEBUG_SIGNING_STORE_PASSWORD") != null) {
@@ -157,15 +131,6 @@ dependencies {
     implementation(libs.ktor.client.core)
 
     coreLibraryDesugaring(libs.desugaring)
-
-    "fullImplementation"(platform(libs.firebase.bom))
-    "fullImplementation"(libs.firebase.analytics)
-    "fullImplementation"(libs.firebase.crashlytics)
-    "fullImplementation"(libs.firebase.config)
-    "fullImplementation"(libs.firebase.perf)
-    "fullImplementation"(libs.mlkit.language.id)
-    "fullImplementation"(libs.mlkit.translate)
-    "fullImplementation"(libs.opencc4j)
 
     implementation(libs.timber)
 }
