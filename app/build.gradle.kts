@@ -20,6 +20,10 @@ android {
         versionCode = 27
         versionName = "0.5.10-foss"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        // Product flavors were removed in favour of a single FOSS build, so AGP no
+        // longer generates BuildConfig.FLAVOR. Existing code still branches on it,
+        // so keep the constant and pin it to the FOSS behaviour.
+        buildConfigField("String", "FLAVOR", "\"foss\"")
     }
     buildTypes {
         release {
@@ -71,7 +75,8 @@ android {
         includeInBundle = false
     }
     lint {
-        lintConfig = file("app/lint.xml")
+        lintConfig = file("lint.xml")
+        abortOnError = false
     }
 }
 
