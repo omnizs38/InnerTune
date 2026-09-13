@@ -21,14 +21,20 @@ tasks.register<Delete>("Clean") {
 }
 
 subprojects {
-    tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
-        kotlinOptions {
-            if (project.findProperty("enableComposeCompilerReports") == "true") {
-                arrayOf("reports", "metrics").forEach {
-                    freeCompilerArgs = freeCompilerArgs + listOf(
-                        "-P", "plugin:androidx.compose.compiler.plugins.kotlin:${it}Destination=${project.buildDir.absolutePath}/compose_metrics"
-                    )
-                }
+    if (project.findProperty("enableComposeCompilerReports") == "true") {
+        val metricsDir = project.layout.buildDirectory.dir("compose_metrics")
+        tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+            compilerOptions {
+                freeCompilerArgs.addAll(
+                    metricsDir.map { dir ->
+                        listOf("reports", "metrics").flatMap {
+                            listOf(
+                                "-P",
+                                "plugin:androidx.compose.compiler.plugins.kotlin:${it}Destination=${dir.asFile.absolutePath}"
+                            )
+                        }
+                    }
+                )
             }
         }
     }
